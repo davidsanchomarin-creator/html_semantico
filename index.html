@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wireframe semántico</title>
+<style>
+:root{
+  --ink:#172033;--muted:#64748b;--line:#dbe2ea;--accent:#2563eb;
+  --bg:#f3f6fa;--panel:#fff;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg)}
+.topbar{padding:17px 24px;background:#172033;color:#fff}
+.topbar h1{margin:0;font-size:1.35rem}
+.topbar p{margin:4px 0 0;color:#cbd5e1;font-size:.9rem}
+main{max-width:1700px;margin:auto;padding:18px 20px 32px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 17px;margin-bottom:14px}
+.panel-title{font-size:.95rem;font-weight:750;margin:0 0 12px}
+.upload-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.tools-grid{display:grid;grid-template-columns:minmax(170px,1fr) minmax(170px,1fr) minmax(170px,1fr) minmax(230px,1.5fr);gap:14px;align-items:start}
+.control{display:grid;gap:6px;min-width:0}
+label{font-size:.82rem;font-weight:700;color:#334155}
+select,input[type=text],input[type=file],button{font:inherit;border:1px solid #cbd5e1;border-radius:8px;padding:9px 11px;min-height:40px;background:white;color:var(--ink)}
+input[type=file]{max-width:360px;font-size:.85rem}
+button{cursor:pointer;font-weight:650}
+button:hover{background:#eff6ff;border-color:#93c5fd}
+button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+button.primary:hover{background:#1d4ed8}
+button:disabled{opacity:.45;cursor:not-allowed}
+.help-card{background:#f8fafc;border:1px solid #e2e8f0;border-left:4px solid #64748b;border-radius:8px;padding:10px 12px;min-height:106px}
+.help-card strong{display:block;margin-bottom:5px;font-size:.9rem}
+.help-card p{margin:0;color:#475569;font-size:.82rem;line-height:1.45}
+.mode-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:13px;padding-top:12px;border-top:1px solid #edf0f4}
+.mode-row .spacer{flex:1}
+.mode-btn.active{background:#eaf1ff;border-color:#7da8f8;color:#1746a2}
+.workspace-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 10px}
+.workspace-head h2{font-size:1rem;margin:0}
+#status{font-size:.83rem;color:var(--muted)}
+.workspace{display:grid;grid-template-columns:minmax(0,1fr) 285px;gap:14px;align-items:start}
+.canvas-wrap{min-height:480px;display:flex;justify-content:center;align-items:flex-start;overflow:auto;padding:16px;background:#e8edf4;border:1px solid #d7dee8;border-radius:12px}
+canvas{display:block;width:auto;height:auto;max-width:100%;background:#fff;box-shadow:0 5px 24px #0f172a20;touch-action:none}
+.empty{align-self:center;text-align:center;max-width:420px;color:var(--muted);line-height:1.55;padding:40px 10px}
+.empty strong{display:block;color:#334155;font-size:1.05rem;margin-bottom:5px}
+.side-panel{position:sticky;top:12px}
+.side-panel h2{font-size:1rem;margin:0 0 10px}
+.tree-hint{font-size:.78rem;color:var(--muted);margin:0 0 12px;line-height:1.4}
+#tree{font: .84rem/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;max-height:570px;overflow:auto}
+.tree-node{display:block;margin:2px 0}
+.tree-button{display:block;width:100%;text-align:left;border:0;background:transparent;padding:4px 6px;border-radius:5px;min-height:0;font:inherit;overflow-wrap:anywhere}
+.tree-button:hover{background:#f1f5f9}
+.tree-button.selected{background:#dbeafe;outline:1px solid #93c5fd}
+.tree-dot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:6px}
+.tree-empty{font: .85rem system-ui;color:var(--muted);padding:8px 0}
+.legend{display:flex;flex-wrap:wrap;gap:7px 13px;margin-top:12px;color:#475569;font-size:.75rem}
+.legend span{white-space:nowrap}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px}
+.help-text{font-size:.82rem;color:var(--muted);line-height:1.5;margin:10px 0 0}
+#htmlPanel{margin-top:14px}
+#htmlOutput{white-space:pre;overflow:auto;max-height:420px;padding:14px;background:#0f172a;color:#e2e8f0;border-radius:8px;font-size:.84rem;line-height:1.55}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+@media(max-width:1050px){.tools-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.workspace{grid-template-columns:minmax(0,1fr) 245px}}
+@media(max-width:720px){main{padding:12px}.tools-grid{grid-template-columns:1fr}.workspace{grid-template-columns:1fr}.side-panel{position:static}.canvas-wrap{min-height:300px;padding:8px}.workspace-head{align-items:flex-start;flex-direction:column}.mode-row .spacer{display:none}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <h1>Wireframe semántico</h1>
+  <p>Analiza un wireframe y construye visualmente la estructura de elementos HTML.</p>
+</header>
+
+<main>
+  <section class="panel" aria-labelledby="uploadTitle">
+    <h2 class="panel-title" id="uploadTitle">1. Cargar wireframe</h2>
+    <div class="upload-row">
+      <input id="imageInput" type="file" accept="image/*" aria-label="Seleccionar imagen del wireframe">
+      <span id="imageInfo" class="help-text" style="margin:0">Selecciona una imagen para comenzar. Solo es necesario cargarla una vez.</span>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="toolsTitle">
+    <h2 class="panel-title" id="toolsTitle">2. Seleccionar elementos HTML</h2>
+    <div class="tools-grid">
+      <div class="control">
+        <label for="containerSelect">Contenedores (con clase opcional)</label>
+        <select id="containerSelect">
+          <optgroup label="Estructura principal">
+            <option value="header">header</option><option value="nav">nav</option>
+            <option value="main" selected>main</option><option value="footer">footer</option>
+          </optgroup>
+          <optgroup label="Organización semántica">
+            <option value="section">section</option><option value="article">article</option>
+            <option value="aside">aside</option><option value="address">address</option>
+          </optgroup>
+          <optgroup label="Otros elementos">
+            <option value="figure">figure</option><option value="div">div</option>
+          </optgroup>
+        </select>
+        <input id="classInput" type="text" placeholder="Clase CSS (opcional), ej. noticias">
+      </div>
+
+      <div class="control">
+        <label for="contentSelect">Contenido (sin clase)</label>
+        <select id="contentSelect">
+          <option value="h1">h1</option><option value="h2">h2</option>
+          <option value="h3">h3</option><option value="h4">h4</option>
+          <option value="h5">h5</option><option value="h6">h6</option>
+          <option value="p">p</option><option value="ul">ul</option>
+          <option value="ol">ol</option><option value="li">li</option>
+          <option value="img">img</option><option value="figure">figure</option>
+          <option value="figcaption">figcaption</option><option value="strong">strong</option>
+          <option value="em">em</option><option value="blockquote">blockquote</option>
+          <option value="time">time</option><option value="hr">hr</option>
+        </select>
+        <span class="help-text" style="margin:0">Al elegir contenido se ignora el campo de clase.</span>
+      </div>
+
+      <aside class="help-card" id="elementHelp" aria-live="polite">
+        <strong id="helpTitle">main</strong>
+        <p id="helpDescription">Representa el contenido principal y único de la página. Debe contener la información central del documento, excluyendo cabeceras, navegación y pies comunes. Normalmente hay un solo main visible por página.</p>
+      </aside>
+
+      <div class="control">
+        <label>Acciones</label>
+        <div class="actions">
+          <button id="undoBtn" disabled>Deshacer</button>
+          <button id="deleteBtn" disabled>Eliminar seleccionado</button>
+          <button id="clearBtn" disabled>Eliminar todo</button>
+        </div>
+        <div class="help-text" style="margin:0">Al cambiar el contenedor se limpia automáticamente la clase para facilitar el siguiente dibujo.</div>
+      </div>
+    </div>
+
+    <div class="mode-row">
+      <strong style="font-size:.84rem">Herramienta:</strong>
+      <button id="drawMode" class="mode-btn active" type="button">Dibujar recuadros</button>
+      <button id="selectMode" class="mode-btn" type="button">Seleccionar / mover</button>
+      <span class="spacer"></span>
+      <button id="downloadPngBtn" disabled>Descargar PNG</button>
+      <button id="exportHtmlBtn" class="primary" disabled>Exportar HTML</button>
+    </div>
+  </section>
+
+  <div class="workspace-head">
+    <h2>3. Área de trabajo</h2>
+    <span id="status" aria-live="polite">Carga una imagen para comenzar.</span>
+  </div>
+
+  <section class="workspace">
+    <div>
+      <div class="canvas-wrap" id="canvasWrap">
+        <div class="empty" id="emptyMessage"><strong>Tu wireframe aparecerá aquí</strong>Carga una imagen y arrastra sobre ella para dibujar recuadros.</div>
+        <canvas id="canvas" hidden aria-label="Wireframe editable con recuadros HTML"></canvas>
+      </div>
+      <p class="help-text">En modo dibujar, arrastra para crear un recuadro. En modo seleccionar, haz clic sobre uno para seleccionarlo, arrástralo para moverlo o utiliza los tiradores de las esquinas para cambiar su tamaño. También puedes seleccionar elementos desde el árbol de la derecha.</p>
+      <div class="legend">
+        <span><i style="background:#2563eb"></i>Estructura principal</span>
+        <span><i style="background:#8b5cf6"></i>Navegación</span>
+        <span><i style="background:#16a34a"></i>Organización</span>
+        <span><i style="background:#64748b"></i>Genéricos</span>
+        <span><i style="background:#ea580c"></i>Texto</span>
+        <span><i style="background:#ca8a04"></i>Listas</span>
+        <span><i style="background:#0891b2"></i>Multimedia</span>
+      </div>
+    </div>
+
+    <aside class="panel side-panel">
+      <h2>Árbol de estructura HTML</h2>
+      <p class="tree-hint">La indentación muestra qué elementos están dentro de otros. Selecciona un elemento para localizarlo en el wireframe.</p>
+      <div id="tree"><div class="tree-empty">Todavía no hay elementos dibujados.</div></div>
+    </aside>
+  </section>
+
+  <section id="htmlPanel" class="panel" hidden>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+      <div><h2 class="panel-title" style="margin:0">Código HTML generado</h2><p class="help-text" style="margin:4px 0 0">La indentación representa el anidamiento geométrico de los recuadros.</p></div>
+      <div class="actions"><button id="copyHtmlBtn">Copiar código</button><button id="closeHtmlBtn">Cerrar</button></div>
+    </div>
+    <pre id="htmlOutput"></pre>
+  </section>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const imageInput=$('imageInput'), containerSelect=$('containerSelect'), contentSelect=$('contentSelect');
+const classInput=$('classInput'), canvas=$('canvas'), ctx=canvas.getContext('2d');
+const image=new Image();
+let imageLoaded=false, annotations=[], selectedId=null, mode='draw';
+let pointerAction=null, startPoint=null, lastPoint=null, activeHandle=null;
+let nextId=1;
+
+const descriptions = {
+ header:'Representa la cabecera de una página o de una sección. Suele incluir el logotipo, el título y otros elementos introductorios. Puede contener navegación, pero no debe utilizarse simplemente para crear una caja visual.',
+ nav:'Agrupa los enlaces de navegación principales o secundarios. Se utiliza para bloques importantes de enlaces que permiten desplazarse por el sitio o por una parte del contenido. No todos los grupos de enlaces necesitan un nav.',
+ main:'Representa el contenido principal y único de la página. Debe contener la información central del documento, excluyendo cabeceras, navegación y pies comunes. Normalmente hay un solo main visible por página.',
+ footer:'Representa el pie de una página o de una sección. Puede contener autoría, información de contacto, enlaces relacionados o información legal. Puede haber varios footer si pertenecen a secciones o artículos diferentes.',
+ section:'Agrupa contenido relacionado temáticamente y normalmente debe tener un encabezado. Se utiliza para dividir una página en partes con entidad propia, no solo para aplicar estilos o crear columnas.',
+ article:'Representa contenido independiente y reutilizable, que podría distribuirse por separado. Ejemplos habituales son una noticia, una entrada de blog, una reseña o una publicación de foro.',
+ aside:'Contiene información complementaria relacionada indirectamente con el contenido que lo rodea. Por ejemplo, una barra lateral, enlaces relacionados, publicidad o una biografía breve.',
+ address:'Proporciona información de contacto de la persona u organización relacionada con el contenido más cercano. No debe utilizarse como contenedor genérico para cualquier dirección postal.',
+ figure:'Agrupa contenido autónomo, como una imagen, un gráfico, una ilustración o un fragmento de código, que puede acompañarse de una leyenda. Su contenido mantiene sentido aunque se mueva dentro del documento.',
+ div:'Es un contenedor genérico sin significado semántico propio. Se utiliza cuando no existe un elemento semántico adecuado y se necesita agrupar contenido para aplicar estilos o trabajar con JavaScript.'
+};
+const colors = {
+ header:'#2563eb',main:'#2563eb',footer:'#2563eb',
+ nav:'#8b5cf6',
+ section:'#16a34a',article:'#16a34a',aside:'#16a34a',address:'#16a34a',
+ div:'#64748b',
+ h1:'#ea580c',h2:'#ea580c',h3:'#ea580c',h4:'#ea580c',h5:'#ea580c',h6:'#ea580c',p:'#ea580c',strong:'#ea580c',em:'#ea580c',blockquote:'#ea580c',time:'#ea580c',
+ ul:'#ca8a04',ol:'#ca8a04',li:'#ca8a04',
+ figure:'#0891b2',figcaption:'#0891b2',img:'#0891b2',hr:'#64748b'
+};
+const voidTags = new Set(['img','hr']);
+
+function activeTag(){return pointerAction?.tag || (document.activeElement===contentSelect ? contentSelect.value : containerSelect.value)}
+function currentSelection(){
+  return selectedId===null ? null : annotations.find(a=>a.id===selectedId) || null;
+}
+function colorFor(tag){return colors[tag] || '#64748b'}
+function pointFromEvent(e){
+  const r=canvas.getBoundingClientRect();
+  return {x:(e.clientX-r.left)*(canvas.width/r.width),y:(e.clientY-r.top)*(canvas.height/r.height)};
+}
+function normalize(a,b){return {x:Math.min(a.x,b.x),y:Math.min(a.y,b.y),w:Math.abs(b.x-a.x),h:Math.abs(b.y-a.y)}}
+function contains(outer,inner){
+  const eps=1;
+  return inner.x>=outer.x-eps && inner.y>=outer.y-eps &&
+    inner.x+inner.w<=outer.x+outer.w+eps && inner.y+inner.h<=outer.y+outer.h+eps;
+}
+function buildTree(){
+  const nodes=annotations.map(a=>({...a,children:[],parent:null}));
+  nodes.forEach(child=>{
+    const parents=nodes.filter(p=>p.id!==child.id && p.w*p.h>child.w*child.h && contains(p,child));
+    parents.sort((a,b)=>(a.w*a.h)-(b.w*b.h));
+    if(parents.length){child.parent=parents[0];parents[0].children.push(child)}
+  });
+  const sort=(arr)=>arr.sort((a,b)=>a.y-b.y||a.x-b.x).forEach(n=>sort(n.children));
+  const roots=nodes.filter(n=>!n.parent);sort(roots);return roots;
+}
+function render(){
+  if(!imageLoaded)return;
+  ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(image,0,0);
+  const scale=Math.max(1,canvas.width/1200);
+  annotations.forEach(a=>{
+    const c=colorFor(a.tag), isSelected=a.id===selectedId;
+    ctx.save();ctx.strokeStyle=c;ctx.lineWidth=(isSelected?4:2.5)*scale;
+    ctx.fillStyle=c+'18';ctx.fillRect(a.x,a.y,a.w,a.h);ctx.strokeRect(a.x,a.y,a.w,a.h);
+    const label=a.className?`${a.tag}.${a.className}`:a.tag;
+    const fs=16*scale,pad=7*scale,h=fs+pad*2;
+    ctx.font=`650 ${fs}px system-ui,sans-serif`;
+    const w=ctx.measureText(label).width+pad*2;
+    const lx=Math.max(0,Math.min(canvas.width-w,a.x+a.w/2-w/2));
+    const ly=Math.max(0,a.y-h/2);
+    ctx.fillStyle=c;ctx.fillRect(lx,ly,w,h);ctx.fillStyle='#fff';
+    ctx.textBaseline='middle';ctx.fillText(label,lx+pad,ly+h/2);
+    if(isSelected){
+      const r=6*scale;ctx.fillStyle='#fff';ctx.strokeStyle='#0f172a';ctx.lineWidth=1.5*scale;
+      [[a.x,a.y],[a.x+a.w,a.y],[a.x,a.y+a.h],[a.x+a.w,a.y+a.h]].forEach(([x,y])=>{
+        ctx.beginPath();ctx.rect(x-r,y-r,r*2,r*2);ctx.fill();ctx.stroke();
+      });
+    }
+    ctx.restore();
+  });
+  if(pointerAction?.type==='draw' && startPoint && lastPoint){
+    const r=normalize(startPoint,lastPoint),c=colorFor(pointerAction.tag);
+    ctx.save();ctx.strokeStyle=c;ctx.lineWidth=2*scale;ctx.setLineDash([8*scale,5*scale]);ctx.strokeRect(r.x,r.y,r.w,r.h);ctx.restore();
+  }
+}
+function renderTree(){
+  const host=$('tree');host.innerHTML='';
+  const roots=buildTree();
+  if(!roots.length){host.innerHTML='<div class="tree-empty">Todavía no hay elementos dibujados.</div>';return}
+  function addNode(node,depth){
+    const row=document.createElement('div');row.className='tree-node';
+    const b=document.createElement('button');b.type='button';b.className='tree-button'+(node.id===selectedId?' selected':'');
+    b.style.paddingLeft=(6+depth*15)+'px';
+    const dot=document.createElement('span');dot.className='tree-dot';dot.style.background=colorFor(node.tag);
+    b.append(dot,document.createTextNode(node.className?`${node.tag}.${node.className}`:node.tag));
+    b.addEventListener('click',()=>{selectedId=node.id;mode='select';updateModeButtons();render();renderTree();updateButtons()});
+    row.appendChild(b);host.appendChild(row);
+    node.children.forEach(ch=>addNode(ch,depth+1));
+  }
+  roots.forEach(n=>addNode(n,0));
+}
+function updateButtons(){
+  $('undoBtn').disabled=!annotations.length;
+  $('deleteBtn').disabled=!currentSelection();
+  $('clearBtn').disabled=!annotations.length;
+  $('downloadPngBtn').disabled=!imageLoaded;
+  $('exportHtmlBtn').disabled=!annotations.length;
+  $('status').textContent=imageLoaded?
+    `${annotations.length} ${annotations.length===1?'elemento':'elementos'} · ${canvas.width} × ${canvas.height} px`:
+    'Carga una imagen para comenzar.';
+}
+function updateHelp(){
+  const tag=containerSelect.value;
+  $('helpTitle').textContent=tag;
+  $('helpDescription').textContent=descriptions[tag]||'Contenedor HTML para agrupar contenido. Consulta su función y utiliza el elemento únicamente cuando su significado encaje con la información que contiene.';
+  $('elementHelp').style.borderLeftColor=colorFor(tag);
+}
+function updateModeButtons(){
+  $('drawMode').classList.toggle('active',mode==='draw');
+  $('selectMode').classList.toggle('active',mode==='select');
+  canvas.style.cursor=mode==='draw'?'crosshair':'default';
+}
+function hitTest(p){
+  // Último dibujado se considera el más cercano visualmente.
+  for(let i=annotations.length-1;i>=0;i--){
+    const a=annotations[i];
+    if(p.x>=a.x&&p.x<=a.x+a.w&&p.y>=a.y&&p.y<=a.y+a.h)return a;
+  }
+  return null;
+}
+function handleAt(p,a){
+  if(!a)return null;
+  const t=11*Math.max(1,canvas.width/1200);
+  const handles=[
+    ['nw',a.x,a.y],['ne',a.x+a.w,a.y],['sw',a.x,a.y+a.h],['se',a.x+a.w,a.y+a.h]
+  ];
+  for(const [name,x,y] of handles)if(Math.abs(p.x-x)<=t&&Math.abs(p.y-y)<=t)return name;
+  return null;
+}
+function setMode(next){mode=next;updateModeButtons();pointerAction=null;render()}
+$('drawMode').addEventListener('click',()=>setMode('draw'));
+$('selectMode').addEventListener('click',()=>setMode('select'));
+
+containerSelect.addEventListener('change',()=>{
+  classInput.value=''; // La clase no se arrastra al siguiente contenedor.
+  contentSelect.selectedIndex=0;
+  updateHelp();
+});
+contentSelect.addEventListener('change',()=>{
+  // Al elegir contenido, el campo clase deja de aplicarse.
+  classInput.value='';
+});
+
+imageInput.addEventListener('change',e=>{
+  const file=e.target.files?.[0];if(!file)return;
+  if(!file.type.startsWith('image/')){alert('Selecciona un archivo de imagen válido.');return}
+  const reader=new FileReader();
+  reader.onload=()=>{
+    image.onload=()=>{
+      canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;
+      imageLoaded=true;annotations=[];selectedId=null;nextId=1;
+      canvas.hidden=false;$('emptyMessage').hidden=true;
+      $('imageInfo').textContent=`${file.name} · ${canvas.width} × ${canvas.height} px`;
+      render();renderTree();updateButtons();
+    };
+    image.onerror=()=>alert('No se ha podido cargar la imagen.');
+    image.src=reader.result;
+  };
+  reader.readAsDataURL(file);
+});
+
+canvas.addEventListener('pointerdown',e=>{
+  if(!imageLoaded)return;e.preventDefault();canvas.setPointerCapture(e.pointerId);
+  const p=pointFromEvent(e);
+  if(mode==='draw'){
+    const isContent=contentSelect.value!=='' && document.activeElement===contentSelect;
+    // Se utiliza el selector de contenido cuando se ha cambiado expresamente; por defecto, contenedor.
+    const tag=contentSelect.dataset.active==='true'?contentSelect.value:containerSelect.value;
+    const useContent=contentSelect.dataset.active==='true';
+    pointerAction={type:'draw',tag:useContent?tag:containerSelect.value,className:useContent?'':classInput.value.trim()};
+    startPoint=p;lastPoint=p;selectedId=null;
+  }else{
+    const selected=currentSelection();
+    const handle=selected?handleAt(p,selected):null;
+    if(handle){
+      pointerAction={type:'resize',id:selected.id,handle,original:{...selected},origin:p};
+    }else{
+      const hit=hitTest(p);
+      if(hit){
+        selectedId=hit.id;
+        pointerAction={type:'move',id:hit.id,origin:p,original:{...hit}};
+      }else{
+        selectedId=null;pointerAction=null;
+      }
+    }
+  }
+  render();renderTree();updateButtons();
+});
+canvas.addEventListener('pointermove',e=>{
+  if(!pointerAction)return;
+  const p=pointFromEvent(e);
+  if(pointerAction.type==='draw'){lastPoint=p;render();return}
+  const a=annotations.find(x=>x.id===pointerAction.id);if(!a)return;
+  const dx=p.x-pointerAction.origin.x,dy=p.y-pointerAction.origin.y;
+  if(pointerAction.type==='move'){
+    a.x=Math.max(0,Math.min(canvas.width-a.w,pointerAction.original.x+dx));
+    a.y=Math.max(0,Math.min(canvas.height-a.h,pointerAction.original.y+dy));
+  }else{
+    const o=pointerAction.original,h=pointerAction.handle;
+    let left=o.x,top=o.y,right=o.x+o.w,bottom=o.y+o.h;
+    if(h.includes('w'))left=Math.min(right-5,o.x+dx);
+    if(h.includes('e'))right=Math.max(left+5,o.x+o.w+dx);
+    if(h.includes('n'))top=Math.min(bottom-5,o.y+dy);
+    if(h.includes('s'))bottom=Math.max(top+5,o.y+o.h+dy);
+    a.x=Math.max(0,left);a.y=Math.max(0,top);
+    a.w=Math.min(canvas.width-a.x,right-a.x);a.h=Math.min(canvas.height-a.y,bottom-a.y);
+  }
+  render();
+});
+function endPointer(e){
+  if(!pointerAction)return;
+  if(pointerAction.type==='draw'){
+    const r=normalize(startPoint,lastPoint||startPoint);
+    if(r.w>=5&&r.h>=5){
+      annotations.push({id:nextId++,...r,tag:pointerAction.tag,className:pointerAction.className});
+      selectedId=annotations[annotations.length-1].id;
+    }
+  }
+  pointerAction=null;startPoint=null;lastPoint=null;
+  render();renderTree();updateButtons();
+}
+canvas.addEventListener('pointerup',endPointer);
+canvas.addEventListener('pointercancel',endPointer);
+
+$('undoBtn').addEventListener('click',()=>{
+  const removed=annotations.pop();if(removed?.id===selectedId)selectedId=null;
+  render();renderTree();updateButtons();
+});
+$('deleteBtn').addEventListener('click',()=>{
+  if(selectedId===null)return;
+  annotations=annotations.filter(a=>a.id!==selectedId);selectedId=null;
+  render();renderTree();updateButtons();
+});
+$('clearBtn').addEventListener('click',()=>{
+  if(!annotations.length||!confirm('¿Eliminar todos los recuadros?'))return;
+  annotations=[];selectedId=null;render();renderTree();updateButtons();
+});
+
+function escapeAttr(v){return v.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function toHtml(node,depth=0){
+  const indent='    '.repeat(depth),cls=node.className?` class="${escapeAttr(node.className)}"`:'';
+  if(voidTags.has(node.tag))return `${indent}<${node.tag}${cls}>`;
+  const children=node.children.map(n=>toHtml(n,depth+1)).join('\n');
+  return children?`${indent}<${node.tag}${cls}>\n${children}\n${indent}</${node.tag}>`:
+    `${indent}<${node.tag}${cls}>\n${indent}</${node.tag}>`;
+}
+function generateHtml(){
+  const roots=buildTree();
+  return roots.map(n=>toHtml(n)).join('\n\n');
+}
+$('exportHtmlBtn').addEventListener('click',()=>{
+  const fragment=generateHtml();
+  $('htmlOutput').textContent=fragment;
+  $('htmlPanel').hidden=false;
+  const doc=`<!DOCTYPE html>\n<html lang="es">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>Estructura HTML</title>\n</head>\n<body>\n${fragment.split('\n').map(line=>'    '+line).join('\n')}\n</body>\n</html>`;
+  downloadBlob(new Blob([doc],{type:'text/html;charset=utf-8'}),'estructura-semantica.html');
+});
+function downloadBlob(blob,name){
+  const url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+$('downloadPngBtn').addEventListener('click',()=>{
+  if(!imageLoaded)return;render();
+  canvas.toBlob(blob=>{if(blob)downloadBlob(blob,'wireframe-semantico.png');else alert('No se ha podido generar el PNG.')},'image/png');
+});
+$('copyHtmlBtn').addEventListener('click',async()=>{
+  try{await navigator.clipboard.writeText($('htmlOutput').textContent);$('copyHtmlBtn').textContent='¡Copiado!';setTimeout(()=>$('copyHtmlBtn').textContent='Copiar código',1300)}
+  catch{alert('No se ha podido copiar automáticamente. Selecciona el código y cópialo manualmente.')}
+});
+$('closeHtmlBtn').addEventListener('click',()=>$('htmlPanel').hidden=true);
+
+// Recordar qué selector se ha usado más recientemente para dibujar.
+contentSelect.addEventListener('focus',()=>contentSelect.dataset.active='true');
+containerSelect.addEventListener('focus',()=>contentSelect.dataset.active='false');
+containerSelect.addEventListener('pointerdown',()=>contentSelect.dataset.active='false');
+contentSelect.addEventListener('pointerdown',()=>contentSelect.dataset.active='true');
+
+updateHelp();updateModeButtons();updateButtons();
+</script>
+</body>
+</html>
