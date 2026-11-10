@@ -3,473 +3,379 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wireframe semántico</title>
+<title>Flexbox Analyzer</title>
 <style>
-:root{
-  --ink:#172033;--muted:#64748b;--line:#dbe2ea;--accent:#2563eb;
-  --bg:#f3f6fa;--panel:#fff;
-}
-*{box-sizing:border-box}
-body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg)}
-.topbar{padding:17px 24px;background:#172033;color:#fff}
-.topbar h1{margin:0;font-size:1.35rem}
-.topbar p{margin:4px 0 0;color:#cbd5e1;font-size:.9rem}
-main{max-width:1700px;margin:auto;padding:18px 20px 32px}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 17px;margin-bottom:14px}
-.panel-title{font-size:.95rem;font-weight:750;margin:0 0 12px}
-.upload-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.tools-grid{display:grid;grid-template-columns:minmax(170px,1fr) minmax(170px,1fr) minmax(170px,1fr) minmax(230px,1.5fr);gap:14px;align-items:start}
-.control{display:grid;gap:6px;min-width:0}
-label{font-size:.82rem;font-weight:700;color:#334155}
-select,input[type=text],input[type=file],button{font:inherit;border:1px solid #cbd5e1;border-radius:8px;padding:9px 11px;min-height:40px;background:white;color:var(--ink)}
-input[type=file]{max-width:360px;font-size:.85rem}
-button{cursor:pointer;font-weight:650}
-button:hover{background:#eff6ff;border-color:#93c5fd}
-button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
-button.primary:hover{background:#1d4ed8}
-button:disabled{opacity:.45;cursor:not-allowed}
-.help-card{background:#f8fafc;border:1px solid #e2e8f0;border-left:4px solid #64748b;border-radius:8px;padding:10px 12px;min-height:106px}
-.help-card strong{display:block;margin-bottom:5px;font-size:.9rem}
-.help-card p{margin:0;color:#475569;font-size:.82rem;line-height:1.45}
-.mode-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:13px;padding-top:12px;border-top:1px solid #edf0f4}
-.mode-row .spacer{flex:1}
-.mode-btn.active{background:#eaf1ff;border-color:#7da8f8;color:#1746a2}
-.workspace-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 10px}
-.workspace-head h2{font-size:1rem;margin:0}
-#status{font-size:.83rem;color:var(--muted)}
-.workspace{display:grid;grid-template-columns:minmax(0,1fr) 285px;gap:14px;align-items:start}
-.canvas-wrap{min-height:480px;display:flex;justify-content:center;align-items:flex-start;overflow:auto;padding:16px;background:#e8edf4;border:1px solid #d7dee8;border-radius:12px}
-canvas{display:block;width:auto;height:auto;max-width:100%;background:#fff;box-shadow:0 5px 24px #0f172a20;touch-action:none}
-.empty{align-self:center;text-align:center;max-width:420px;color:var(--muted);line-height:1.55;padding:40px 10px}
-.empty strong{display:block;color:#334155;font-size:1.05rem;margin-bottom:5px}
-.side-panel{position:sticky;top:12px}
-.side-panel h2{font-size:1rem;margin:0 0 10px}
-.tree-hint{font-size:.78rem;color:var(--muted);margin:0 0 12px;line-height:1.4}
-#tree{font: .84rem/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;max-height:570px;overflow:auto}
-.tree-node{display:block;margin:2px 0}
-.tree-button{display:block;width:100%;text-align:left;border:0;background:transparent;padding:4px 6px;border-radius:5px;min-height:0;font:inherit;overflow-wrap:anywhere}
-.tree-button:hover{background:#f1f5f9}
-.tree-button.selected{background:#dbeafe;outline:1px solid #93c5fd}
-.tree-dot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:6px}
-.tree-empty{font: .85rem system-ui;color:var(--muted);padding:8px 0}
-.legend{display:flex;flex-wrap:wrap;gap:7px 13px;margin-top:12px;color:#475569;font-size:.75rem}
-.legend span{white-space:nowrap}
-.legend i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px}
-.help-text{font-size:.82rem;color:var(--muted);line-height:1.5;margin:10px 0 0}
-#htmlPanel{margin-top:14px}
-#htmlOutput{white-space:pre;overflow:auto;max-height:420px;padding:14px;background:#0f172a;color:#e2e8f0;border-radius:8px;font-size:.84rem;line-height:1.55}
-.actions{display:flex;gap:8px;flex-wrap:wrap}
-@media(max-width:1050px){.tools-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.workspace{grid-template-columns:minmax(0,1fr) 245px}}
-@media(max-width:720px){main{padding:12px}.tools-grid{grid-template-columns:1fr}.workspace{grid-template-columns:1fr}.side-panel{position:static}.canvas-wrap{min-height:300px;padding:8px}.workspace-head{align-items:flex-start;flex-direction:column}.mode-row .spacer{display:none}}
+:root{--bg:#f3f5f8;--panel:#fff;--ink:#182230;--muted:#667085;--line:#e4e7ec;--accent:#2563eb;--accent2:#dbeafe;--good:#15803d;--danger:#dc2626;--shadow:0 8px 28px #17203312}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input,select,textarea{font:inherit}button{cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:9px;padding:8px 11px;font-weight:600}button:hover{border-color:#98a2b3;background:#f9fafb}button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}button.primary:hover{background:#1d4ed8}button.active{background:var(--accent2);border-color:#93c5fd;color:#1d4ed8}button.danger{color:var(--danger)}button:disabled{opacity:.45;cursor:not-allowed}
+.topbar{height:64px;background:#111827;color:white;display:flex;align-items:center;justify-content:space-between;padding:0 22px;gap:16px}.brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:17px;letter-spacing:.2px}.logo{width:32px;height:32px;border-radius:9px;background:#2563eb;display:grid;place-items:center;font-weight:900}.top-actions{display:flex;gap:8px;align-items:center}.topbar button{background:#263244;color:#fff;border-color:#39465a}.topbar button.primary{background:#2563eb;border-color:#2563eb}
+.app{display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:16px;padding:16px;max-width:1700px;margin:auto}.workspace,.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}.workspace{min-width:0;overflow:hidden}.toolbar{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}.toolbar .spacer{flex:1}.tool-label{color:var(--muted);font-size:12px;font-weight:700;margin-right:2px}.stage-wrap{background:#e9edf3;min-height:580px;max-height:calc(100vh - 175px);overflow:auto;padding:28px;display:flex;align-items:flex-start;justify-content:center}.stage{position:relative;display:inline-block;line-height:0;box-shadow:0 8px 25px #10182820;background:white;flex:none;max-width:none}.stage img{display:block;max-width:none;user-select:none;-webkit-user-drag:none;pointer-events:none}
+.property-preview{position:absolute;z-index:20;width:240px;max-width:min(240px,calc(100vw - 40px));padding:12px 14px;background:#111827f5;color:#fff;border:1px solid #475467;border-radius:10px;box-shadow:0 12px 30px #10182855;pointer-events:none;line-height:1.45}
+.property-preview.pinned{border:2px solid #f59e0b;box-shadow:0 0 0 3px #f59e0b33,0 12px 30px #10182855}
+.property-preview .preview-title{font-weight:800;font-size:13px;margin-bottom:8px;display:flex;justify-content:space-between;gap:8px}
+.property-preview .preview-state{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#fcd34d}
+.property-preview .preview-row{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-top:1px solid #ffffff20;font-size:11px}
+.property-preview .preview-row span{color:#cbd5e1}
+.property-preview .preview-row strong{font:600 10px ui-monospace,monospace;text-align:right;overflow-wrap:anywhere}
+.property-preview .preview-reason{margin-top:7px;padding-top:7px;border-top:1px solid #ffffff30;color:#d1d5db;font-size:10px;white-space:normal}
+.overlay{position:absolute;inset:0;width:100%;height:100%;overflow:visible;touch-action:none}.rect{fill:#3b82f622;stroke:#2563eb;stroke-width:2;vector-effect:non-scaling-stroke;cursor:pointer}.rect.selected{fill:#f59e0b25;stroke:#d97706;stroke-width:3}.rect-label{font:700 12px Inter, sans-serif;fill:white;pointer-events:none}.label-bg{fill:#1d4ed8;pointer-events:none}.rect.selected+.label-bg{fill:#b45309}.handle{fill:white;stroke:#d97706;stroke-width:2;vector-effect:non-scaling-stroke;cursor:nwse-resize}.empty{display:grid;place-items:center;text-align:center;color:var(--muted);min-height:520px;padding:40px}.empty .empty-inner{max-width:430px}.empty-icon{font-size:48px;margin-bottom:12px}.empty h2{color:var(--ink);margin:0 0 8px}.empty p{margin:0 0 18px}.side{display:flex;flex-direction:column;gap:14px;min-width:0}.panel{padding:16px}.panel h2{font-size:15px;margin:0 0 13px}.panel h3{font-size:13px;margin:16px 0 8px}.subtle{color:var(--muted);font-size:12px}.field{display:flex;flex-direction:column;gap:5px;margin:10px 0}.field label{font-size:12px;color:#475467;font-weight:700}.field input,.field select,.field textarea{width:100%;border:1px solid #d0d5dd;border-radius:8px;padding:8px 9px;background:#fff;color:var(--ink);min-width:0}.field textarea{resize:vertical;min-height:60px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.property-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.property-grid .field{margin:3px 0}.field small{font-size:11px;color:var(--muted)}.button-row{display:flex;gap:7px;flex-wrap:wrap}.button-row button{flex:1}.layers{display:flex;flex-direction:column;gap:5px;max-height:230px;overflow:auto}.layer{display:flex;align-items:center;gap:7px;padding:8px;border:1px solid var(--line);border-radius:8px;cursor:pointer;background:#fff}.layer.selected{border-color:#93c5fd;background:#eff6ff}.layer .swatch{width:11px;height:11px;border-radius:3px;flex:none}.layer .layer-name{font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}.layer .layer-meta{font-size:10px;color:var(--muted)}.layer .mini{border:0;background:transparent;padding:2px 4px;color:var(--muted)}.notice{padding:9px 10px;border-radius:8px;background:#eff6ff;color:#1e40af;font-size:12px;margin-top:9px}.status{padding:8px 12px;border-top:1px solid var(--line);display:flex;justify-content:space-between;color:var(--muted);font-size:11px;gap:10px}.hidden{display:none!important}.mode-pill{border-radius:99px;background:#dcfce7;color:#166534;padding:5px 9px;font-size:11px;font-weight:800}.dropzone{border:2px dashed #cbd5e1;border-radius:12px;padding:26px;text-align:center;background:#f8fafc}.dropzone.drag{border-color:#2563eb;background:#eff6ff}.footer-note{font-size:11px;color:var(--muted);padding:0 4px 4px}
+.student-identity{margin:8px 0 12px;padding:10px 12px;background:#f8fafc;border:1px solid var(--line);border-radius:8px;font-weight:750;color:#1d2939;overflow-wrap:anywhere}
+dialog{width:min(440px,calc(100% - 32px));border:0;border-radius:14px;padding:24px;box-shadow:0 24px 70px #10182855;color:var(--ink)}dialog::backdrop{background:#10182899;backdrop-filter:blur(2px)}dialog h2{font-size:18px;margin:0 0 8px}dialog p{color:var(--muted);font-size:13px;margin:0 0 16px}dialog input{width:100%;border:1px solid #d0d5dd;border-radius:8px;padding:11px;margin:5px 0 14px}dialog .dialog-actions{display:flex;justify-content:flex-end;gap:8px}
+@media(max-width:1050px){.app{grid-template-columns:1fr}.side{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.stage-wrap{max-height:none}.topbar{padding:0 12px}.top-actions{flex-wrap:wrap;justify-content:flex-end}}
+@media(max-width:650px){.side{display:flex}.app{padding:8px;gap:8px}.stage-wrap{padding:12px;min-height:350px}.topbar{height:auto;min-height:60px;align-items:flex-start;padding:12px;flex-direction:column}.top-actions{justify-content:flex-start}.toolbar{padding:8px}.top-actions button{font-size:12px;padding:7px}}
 </style>
 </head>
 <body>
 <header class="topbar">
-  <h1>Wireframe semántico</h1>
-  <p>Analiza un wireframe y construye visualmente la estructura de elementos HTML.</p>
-</header>
-
-<main>
-  <section class="panel" aria-labelledby="uploadTitle">
-    <h2 class="panel-title" id="uploadTitle">1. Cargar wireframe</h2>
-    <div class="upload-row">
-      <input id="imageInput" type="file" accept="image/*" aria-label="Seleccionar imagen del wireframe">
-      <span id="imageInfo" class="help-text" style="margin:0">Selecciona una imagen para comenzar. Solo es necesario cargarla una vez.</span>
-    </div>
-  </section>
-
-  <section class="panel" aria-labelledby="toolsTitle">
-    <h2 class="panel-title" id="toolsTitle">2. Seleccionar elementos HTML</h2>
-    <div class="tools-grid">
-      <div class="control">
-        <label for="containerSelect">Contenedores (con clase opcional)</label>
-        <select id="containerSelect">
-          <optgroup label="Estructura principal">
-            <option value="header">header</option><option value="nav">nav</option>
-            <option value="main" selected>main</option><option value="footer">footer</option>
-          </optgroup>
-          <optgroup label="Organización semántica">
-            <option value="section">section</option><option value="article">article</option>
-            <option value="aside">aside</option><option value="address">address</option>
-          </optgroup>
-          <optgroup label="Otros elementos">
-            <option value="figure">figure</option><option value="div">div</option>
-          </optgroup>
-        </select>
-        <input id="classInput" type="text" placeholder="Clase CSS (opcional), ej. noticias">
-      </div>
-
-      <div class="control">
-        <label for="contentSelect">Contenido (sin clase)</label>
-        <select id="contentSelect">
-          <option value="h1">h1</option><option value="h2">h2</option>
-          <option value="h3">h3</option><option value="h4">h4</option>
-          <option value="h5">h5</option><option value="h6">h6</option>
-          <option value="p">p</option><option value="ul">ul</option>
-          <option value="ol">ol</option><option value="li">li</option>
-          <option value="img">img</option><option value="figure">figure</option>
-          <option value="figcaption">figcaption</option><option value="strong">strong</option>
-          <option value="em">em</option><option value="blockquote">blockquote</option>
-          <option value="time">time</option><option value="hr">hr</option>
-        </select>
-        <span class="help-text" style="margin:0">Al elegir contenido se ignora el campo de clase.</span>
-      </div>
-
-      <aside class="help-card" id="elementHelp" aria-live="polite">
-        <strong id="helpTitle">main</strong>
-        <p id="helpDescription">Representa el contenido principal y único de la página. Debe contener la información central del documento, excluyendo cabeceras, navegación y pies comunes. Normalmente hay un solo main visible por página.</p>
-      </aside>
-
-      <div class="control">
-        <label>Acciones</label>
-        <div class="actions">
-          <button id="undoBtn" disabled>Deshacer</button>
-          <button id="deleteBtn" disabled>Eliminar seleccionado</button>
-          <button id="clearBtn" disabled>Eliminar todo</button>
-        </div>
-        <div class="help-text" style="margin:0">Al cambiar el contenedor se limpia automáticamente la clase para facilitar el siguiente dibujo.</div>
-      </div>
-    </div>
-
-    <div class="mode-row">
-      <strong style="font-size:.84rem">Herramienta:</strong>
-      <button id="drawMode" class="mode-btn active" type="button">Dibujar recuadros</button>
-      <button id="selectMode" class="mode-btn" type="button">Seleccionar / mover</button>
-      <span class="spacer"></span>
-      <button id="downloadPngBtn" disabled>Descargar PNG</button>
-      <button id="exportHtmlBtn" class="primary" disabled>Exportar HTML</button>
-    </div>
-  </section>
-
-  <div class="workspace-head">
-    <h2>3. Área de trabajo</h2>
-    <span id="status" aria-live="polite">Carga una imagen para comenzar.</span>
+  <div class="brand"><div class="logo">F</div><span>Flexbox Analyzer</span></div>
+  <div class="top-actions">
+    <span class="mode-pill student">MODO ALUMNO</span>
+    <button id="saveBtn">Guardar trabajo</button>
+    <button id="exportBtn" class="primary">Exportar PNG</button>
   </div>
-
+</header>
+<main class="app">
   <section class="workspace">
-    <div>
-      <div class="canvas-wrap" id="canvasWrap">
-        <div class="empty" id="emptyMessage"><strong>Tu wireframe aparecerá aquí</strong>Carga una imagen y arrastra sobre ella para dibujar recuadros.</div>
-        <canvas id="canvas" hidden aria-label="Wireframe editable con recuadros HTML"></canvas>
+    <div class="toolbar">
+      <span class="tool-label">HERRAMIENTAS</span>
+      <button id="drawBtn" class="active" disabled>＋ Dibujar contenedor</button>
+      <button id="selectBtn" disabled>↖ Seleccionar</button>
+      <button id="deleteBtn" disabled>Eliminar</button>
+      <span class="spacer"></span>
+      <button id="zoomOut" disabled>−</button><span id="zoomLabel" class="subtle">100%</span><button id="zoomIn" disabled>＋</button>
+      <button id="fitBtn" disabled>Ajustar</button>
+    </div>
+    <div id="stageWrap" class="stage-wrap">
+      <div id="empty" class="empty">
+        <div class="empty-inner">
+          <div class="empty-icon">▧</div><h2>Analiza una interfaz con Flexbox</h2>
+          <p>Carga una captura de una página web. Después dibuja rectángulos sobre las zonas que crees que están organizadas mediante Flexbox.</p>
+          <label class="button primary" for="imageInput">Cargar captura</label>
+          <input id="imageInput" type="file" accept="image/*" class="hidden">
+          <p class="subtle" style="margin-top:12px">También puedes arrastrar una imagen hasta esta zona.</p>
+        </div>
       </div>
-      <p class="help-text">En modo dibujar, arrastra para crear un recuadro. En modo seleccionar, haz clic sobre uno para seleccionarlo, arrástralo para moverlo o utiliza los tiradores de las esquinas para cambiar su tamaño. También puedes seleccionar elementos desde el árbol de la derecha.</p>
-      <div class="legend">
-        <span><i style="background:#2563eb"></i>Estructura principal</span>
-        <span><i style="background:#8b5cf6"></i>Navegación</span>
-        <span><i style="background:#16a34a"></i>Organización</span>
-        <span><i style="background:#64748b"></i>Genéricos</span>
-        <span><i style="background:#ea580c"></i>Texto</span>
-        <span><i style="background:#ca8a04"></i>Listas</span>
-        <span><i style="background:#0891b2"></i>Multimedia</span>
+      <div id="stage" class="stage hidden">
+        <img id="sourceImage" alt="Captura que se está analizando">
+        <svg id="overlay" class="overlay" xmlns="http://www.w3.org/2000/svg"></svg>
+        <div id="propertyPreview" class="property-preview hidden" aria-live="polite"></div>
       </div>
     </div>
-
-    <aside class="panel side-panel">
-      <h2>Árbol de estructura HTML</h2>
-      <p class="tree-hint">La indentación muestra qué elementos están dentro de otros. Selecciona un elemento para localizarlo en el wireframe.</p>
-      <div id="tree"><div class="tree-empty">Todavía no hay elementos dibujados.</div></div>
-    </aside>
+    <div class="status"><span id="statusText">Carga una imagen para comenzar.</span><span id="coordsText">—</span></div>
   </section>
-
-  <section id="htmlPanel" class="panel" hidden>
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-      <div><h2 class="panel-title" style="margin:0">Código HTML generado</h2><p class="help-text" style="margin:4px 0 0">La indentación representa el anidamiento geométrico de los recuadros.</p></div>
-      <div class="actions"><button id="copyHtmlBtn">Copiar código</button><button id="closeHtmlBtn">Cerrar</button></div>
-    </div>
-    <pre id="htmlOutput"></pre>
-  </section>
+  <aside class="side">
+    <section class="panel">
+      <h2>Contenedor seleccionado</h2>
+      <div id="noSelection" class="subtle">Dibuja un rectángulo o selecciona uno de la lista para editar sus propiedades.</div>
+      <div id="editor" class="hidden">
+        <div class="field"><label for="boxName">Nombre del contenedor</label><input id="boxName" maxlength="45" placeholder="Ej. Menú principal"></div>
+        <div class="property-grid">
+          <div class="field"><label for="direction">flex-direction</label><select id="direction"><option>row</option><option>row-reverse</option><option>column</option><option>column-reverse</option></select></div>
+          <div class="field"><label for="wrap">flex-wrap</label><select id="wrap"><option>nowrap</option><option>wrap</option><option>wrap-reverse</option></select></div>
+          <div class="field"><label for="justify">justify-content</label><select id="justify"><option>flex-start</option><option>flex-end</option><option>center</option><option>space-between</option><option>space-around</option><option>space-evenly</option></select></div>
+          <div class="field"><label for="align">align-items</label><select id="align"><option>stretch</option><option>flex-start</option><option>flex-end</option><option>center</option><option>baseline</option></select></div>
+          <div class="field"><label for="gap">gap</label><input id="gap" type="text" value="0" placeholder="16px"><small>Ej.: 12px, 1rem, 2%</small></div>
+          <div class="field"><label for="color">Color del recuadro</label><input id="color" type="color" value="#2563eb" style="height:36px;padding:3px"></div>
+        </div>
+        <div class="field"><label for="justification">Justificación / razonamiento</label><textarea id="justification" placeholder="¿Por qué consideras que esta zona utiliza Flexbox?"></textarea></div>
+        <div class="button-row"><button id="duplicateBtn">Duplicar</button><button id="deleteSelectedBtn" class="danger">Eliminar</button></div>
+      </div>
+    </section>
+    <section class="panel">
+      <h2>Capas y anidamiento <span id="layerCount" class="subtle"></span></h2>
+      <div id="layers" class="layers"><div class="subtle">Todavía no hay contenedores.</div></div>
+      <div class="notice">Para crear un contenedor dentro de otro, mantén activo «Dibujar contenedor». Cambia a «Seleccionar» para moverlos o consultar sus propiedades.</div>
+    </section>
+    <section class="panel">
+      <h2>Actividad y entrega</h2>
+      <div class="field"><label for="activityTitle">Título de la actividad</label><input id="activityTitle" value="Análisis de una interfaz con Flexbox"></div>
+      <div class="field"><label>Alumno/a</label><p id="studentName" class="student-identity">Se solicitará al cargar la primera imagen.</p><small class="subtle">El nombre queda asociado al trabajo y no se puede editar desde la aplicación.</small></div>
+      <div class="field"><label for="activityInstructions">Notas de la actividad</label><textarea id="activityInstructions" placeholder="Identifica los contenedores Flexbox y explica las propiedades que utilizarías."></textarea></div>
+      <div class="button-row"><button id="exportJsonBtn">Exportar proyecto</button><button id="importJsonBtn">Importar proyecto</button></div>
+      <input id="jsonInput" type="file" accept=".json,application/json" class="hidden">
+      <div class="footer-note">El trabajo se guarda en este navegador. Exporta el proyecto JSON para conservarlo o compartirlo.</div>
+    </section>
+  </aside>
 </main>
-
+<dialog id="nameDialog" aria-labelledby="nameDialogTitle">
+  <form id="nameForm">
+    <h2 id="nameDialogTitle">Identificación del alumno/a</h2>
+    <p>Antes de comenzar, escribe tu nombre y apellidos. Se mostrarán en el trabajo y aparecerán como marca de agua en la imagen exportada. Una vez confirmado, no podrás cambiarlo desde la aplicación.</p>
+    <label for="studentNameInput"><strong>Nombre y apellidos</strong></label>
+    <input id="studentNameInput" type="text" maxlength="100" autocomplete="name" placeholder="Nombre y apellidos" required>
+    <div class="dialog-actions">
+      <button type="button" id="cancelNameBtn">Cancelar</button>
+      <button type="submit" class="primary">Confirmar y continuar</button>
+    </div>
+  </form>
+</dialog>
 <script>
+(() => {
 const $ = id => document.getElementById(id);
-const imageInput=$('imageInput'), containerSelect=$('containerSelect'), contentSelect=$('contentSelect');
-const classInput=$('classInput'), canvas=$('canvas'), ctx=canvas.getContext('2d');
-const image=new Image();
-let imageLoaded=false, annotations=[], selectedId=null, mode='draw';
-let pointerAction=null, startPoint=null, lastPoint=null, activeHandle=null;
-let nextId=1;
-
-const descriptions = {
- header:'Representa la cabecera de una página o de una sección. Suele incluir el logotipo, el título y otros elementos introductorios. Puede contener navegación, pero no debe utilizarse simplemente para crear una caja visual.',
- nav:'Agrupa los enlaces de navegación principales o secundarios. Se utiliza para bloques importantes de enlaces que permiten desplazarse por el sitio o por una parte del contenido. No todos los grupos de enlaces necesitan un nav.',
- main:'Representa el contenido principal y único de la página. Debe contener la información central del documento, excluyendo cabeceras, navegación y pies comunes. Normalmente hay un solo main visible por página.',
- footer:'Representa el pie de una página o de una sección. Puede contener autoría, información de contacto, enlaces relacionados o información legal. Puede haber varios footer si pertenecen a secciones o artículos diferentes.',
- section:'Agrupa contenido relacionado temáticamente y normalmente debe tener un encabezado. Se utiliza para dividir una página en partes con entidad propia, no solo para aplicar estilos o crear columnas.',
- article:'Representa contenido independiente y reutilizable, que podría distribuirse por separado. Ejemplos habituales son una noticia, una entrada de blog, una reseña o una publicación de foro.',
- aside:'Contiene información complementaria relacionada indirectamente con el contenido que lo rodea. Por ejemplo, una barra lateral, enlaces relacionados, publicidad o una biografía breve.',
- address:'Proporciona información de contacto de la persona u organización relacionada con el contenido más cercano. No debe utilizarse como contenedor genérico para cualquier dirección postal.',
- figure:'Agrupa contenido autónomo, como una imagen, un gráfico, una ilustración o un fragmento de código, que puede acompañarse de una leyenda. Su contenido mantiene sentido aunque se mueva dentro del documento.',
- div:'Es un contenedor genérico sin significado semántico propio. Se utiliza cuando no existe un elemento semántico adecuado y se necesita agrupar contenido para aplicar estilos o trabajar con JavaScript.'
+const state = {image:null,imageName:"",naturalW:0,naturalH:0,zoom:1,boxes:[],selected:null,tool:"draw",drawing:null,drag:null,hovered:null,pinned:null,activityTitle:"Análisis de una interfaz con Flexbox",studentName:"",instructions:"",pendingImage:null};
+const fields = ["direction","wrap","justify","align","gap","color","justification","boxName"];
+const defaults = {direction:"row",wrap:"nowrap",justify:"flex-start",align:"stretch",gap:"0",color:"#2563eb",justification:"",boxName:""};
+const uid = () => "fb-" + Math.random().toString(36).slice(2,9);
+const esc = s => String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function setStatus(s){$("statusText").textContent=s}
+function updateControls(){
+ const loaded=!!state.image;
+ ["drawBtn","selectBtn","deleteBtn","zoomOut","zoomIn","fitBtn"].forEach(id=>$(id).disabled=!loaded);
+ $("drawBtn").classList.toggle("active",state.tool==="draw");$("selectBtn").classList.toggle("active",state.tool==="select");
+ $("zoomLabel").textContent=Math.round(state.zoom*100)+"%";
+ $("deleteBtn").disabled=!loaded||!state.selected;
+}
+function setTool(tool){
+ state.tool=tool;state.drawing=null;state.drag=null;state.hovered=null;
+ if(tool==="draw"){state.pinned=null;showPropertyPreview(null);setStatus("Modo dibujo: puedes crear contenedores incluso dentro de otros.")}
+ else setStatus("Modo selección: pasa el ratón por un contenedor para ver sus propiedades y haz clic para fijar la tarjeta.");
+ updateControls();render();
+}
+function setStudentName(name){
+ const clean=String(name||"").trim().replace(/\\s+/g," ");
+ if(!clean)return false;
+ state.studentName=clean;
+ $("studentName").textContent=clean;
+ try{localStorage.setItem("flexboxAnalyzerStudentName",clean)}catch{}
+ return true;
+}
+function requestImageLoad(data,name){
+ if(!state.studentName){
+  state.pendingImage={data,name};
+  $("studentNameInput").value="";
+  $("nameDialog").showModal();
+  $("studentNameInput").focus();
+  return;
+ }
+ imageLoaded(data,name);
+}
+$("nameForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ if(!setStudentName($("studentNameInput").value)){
+  $("studentNameInput").focus();
+  return;
+ }
+ $("nameDialog").close();
+ const pending=state.pendingImage;
+ state.pendingImage=null;
+ if(pending)imageLoaded(pending.data,pending.name);
+});
+$("cancelNameBtn").onclick=()=>{
+ $("nameDialog").close();
+ state.pendingImage=null;
+ setStatus("Carga cancelada. Para comenzar, vuelve a seleccionar una imagen e introduce tu nombre y apellidos.");
 };
-const colors = {
- header:'#2563eb',main:'#2563eb',footer:'#2563eb',
- nav:'#8b5cf6',
- section:'#16a34a',article:'#16a34a',aside:'#16a34a',address:'#16a34a',
- div:'#64748b',
- h1:'#ea580c',h2:'#ea580c',h3:'#ea580c',h4:'#ea580c',h5:'#ea580c',h6:'#ea580c',p:'#ea580c',strong:'#ea580c',em:'#ea580c',blockquote:'#ea580c',time:'#ea580c',
- ul:'#ca8a04',ol:'#ca8a04',li:'#ca8a04',
- figure:'#0891b2',figcaption:'#0891b2',img:'#0891b2',hr:'#64748b'
-};
-const voidTags = new Set(['img','hr']);
-
-function activeTag(){return pointerAction?.tag || (document.activeElement===contentSelect ? contentSelect.value : containerSelect.value)}
-function currentSelection(){
-  return selectedId===null ? null : annotations.find(a=>a.id===selectedId) || null;
+function imageLoaded(data,name){
+ const im=new Image();im.onload=()=>{state.image=data;state.imageName=name;state.naturalW=im.naturalWidth;state.naturalH=im.naturalHeight;state.zoom=Math.min(1,760/im.naturalWidth);$("sourceImage").src=data;$("sourceImage").style.width=(state.naturalW*state.zoom)+"px";$("sourceImage").style.height=(state.naturalH*state.zoom)+"px";$("overlay").setAttribute("viewBox",`0 0 ${state.naturalW} ${state.naturalH}`);$("overlay").style.width=(state.naturalW*state.zoom)+"px";$("overlay").style.height=(state.naturalH*state.zoom)+"px";$("empty").classList.add("hidden");$("stage").classList.remove("hidden");state.boxes=[];state.selected=null;updateControls();render();setStatus(`Imagen cargada: ${name} (${state.naturalW} × ${state.naturalH} px). Dibuja el primer contenedor.`);};
+ im.onerror=()=>setStatus("No se ha podido abrir la imagen.");im.src=data;
 }
-function colorFor(tag){return colors[tag] || '#64748b'}
-function pointFromEvent(e){
-  const r=canvas.getBoundingClientRect();
-  return {x:(e.clientX-r.left)*(canvas.width/r.width),y:(e.clientY-r.top)*(canvas.height/r.height)};
+$("imageInput").addEventListener("change",e=>{const f=e.target.files[0];if(f){const r=new FileReader();r.onload=()=>requestImageLoad(r.result,f.name);r.readAsDataURL(f)}e.target.value=""});
+$("stageWrap").addEventListener("dragover",e=>{e.preventDefault();$("stageWrap").classList.add("drag")});
+$("stageWrap").addEventListener("dragleave",()=>$("stageWrap").classList.remove("drag"));
+$("stageWrap").addEventListener("drop",e=>{e.preventDefault();$("stageWrap").classList.remove("drag");const f=[...e.dataTransfer.files].find(x=>x.type.startsWith("image/"));if(f){const r=new FileReader();r.onload=()=>requestImageLoad(r.result,f.name);r.readAsDataURL(f)}});
+function scaled(){const r=$("overlay").getBoundingClientRect();return {sx:state.naturalW/r.width,sy:state.naturalH/r.height}}
+function point(e){const r=$("overlay").getBoundingClientRect(),s=scaled();return {x:Math.max(0,Math.min(state.naturalW,(e.clientX-r.left)*s.sx)),y:Math.max(0,Math.min(state.naturalH,(e.clientY-r.top)*s.sy))}}
+function rectMarkup(b){
+ const x=b.x,y=b.y,w=b.w,h=b.h,label=b.name||"Contenedor",color=b.color;
+ return `<g data-id="${esc(b.id)}"><rect class="rect ${state.selected===b.id?"selected":""}" x="${x}" y="${y}" width="${w}" height="${h}" style="stroke:${color}" data-id="${esc(b.id)}"/><rect class="label-bg" x="${x}" y="${y}" width="${Math.min(Math.max(90,label.length*7+14),w)}" height="22" style="fill:${color}"/><text class="rect-label" x="${x+7}" y="${y+15}">${esc(label)}</text>${state.selected===b.id?`<rect class="handle" x="${x+w-7}" y="${y+h-7}" width="14" height="14"/>`:""}</g>`;
 }
-function normalize(a,b){return {x:Math.min(a.x,b.x),y:Math.min(a.y,b.y),w:Math.abs(b.x-a.x),h:Math.abs(b.y-a.y)}}
-function contains(outer,inner){
-  const eps=1;
-  return inner.x>=outer.x-eps && inner.y>=outer.y-eps &&
-    inner.x+inner.w<=outer.x+outer.w+eps && inner.y+inner.h<=outer.y+outer.h+eps;
+function boxAt(p){
+ return [...state.boxes].reverse().find(b=>p.x>=b.x&&p.x<=b.x+b.w&&p.y>=b.y&&p.y<=b.y+b.h)||null;
 }
-function buildTree(){
-  const nodes=annotations.map(a=>({...a,children:[],parent:null}));
-  nodes.forEach(child=>{
-    const parents=nodes.filter(p=>p.id!==child.id && p.w*p.h>child.w*child.h && contains(p,child));
-    parents.sort((a,b)=>(a.w*a.h)-(b.w*b.h));
-    if(parents.length){child.parent=parents[0];parents[0].children.push(child)}
-  });
-  const sort=(arr)=>arr.sort((a,b)=>a.y-b.y||a.x-b.x).forEach(n=>sort(n.children));
-  const roots=nodes.filter(n=>!n.parent);sort(roots);return roots;
+function showPropertyPreview(b,p,pinned=false){
+ const card=$("propertyPreview");
+ if(!b){card.classList.add("hidden");return}
+ const rows=[
+  ["flex-direction",b.direction],["flex-wrap",b.wrap],["justify-content",b.justify],
+  ["align-items",b.align],["gap",b.gap]
+ ];
+ card.innerHTML=`<div class="preview-title"><span>${esc(b.name||"Contenedor")}</span><span class="preview-state">${pinned?"FIJADO":"VISTA PREVIA"}</span></div>${rows.map(([k,v])=>`<div class="preview-row"><span>${k}</span><strong>${esc(v)}</strong></div>`).join("")}${b.justification?`<div class="preview-reason">${esc(b.justification)}</div>`:""}`;
+ card.classList.toggle("pinned",pinned);
+ card.classList.remove("hidden");
+ const stage=$("stage"),w=240,h=card.offsetHeight,sw=stage.clientWidth,sh=stage.clientHeight;
+ let left=(p?p.x*state.zoom+14:12),top=(p?p.y*state.zoom+14:12);
+ if(left+w>sw)left=Math.max(4,(p?p.x*state.zoom-w-14:sw-w-4));
+ if(top+h>sh)top=Math.max(4,(p?p.y*state.zoom-h-14:sh-h-4));
+ card.style.left=left+"px";card.style.top=top+"px";
 }
 function render(){
-  if(!imageLoaded)return;
-  ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(image,0,0);
-  const scale=Math.max(1,canvas.width/1200);
-  annotations.forEach(a=>{
-    const c=colorFor(a.tag), isSelected=a.id===selectedId;
-    ctx.save();ctx.strokeStyle=c;ctx.lineWidth=(isSelected?4:2.5)*scale;
-    ctx.fillStyle=c+'18';ctx.fillRect(a.x,a.y,a.w,a.h);ctx.strokeRect(a.x,a.y,a.w,a.h);
-    const label=a.className?`${a.tag}.${a.className}`:a.tag;
-    const fs=16*scale,pad=7*scale,h=fs+pad*2;
-    ctx.font=`650 ${fs}px system-ui,sans-serif`;
-    const w=ctx.measureText(label).width+pad*2;
-    const lx=Math.max(0,Math.min(canvas.width-w,a.x+a.w/2-w/2));
-    const ly=Math.max(0,a.y-h/2);
-    ctx.fillStyle=c;ctx.fillRect(lx,ly,w,h);ctx.fillStyle='#fff';
-    ctx.textBaseline='middle';ctx.fillText(label,lx+pad,ly+h/2);
-    if(isSelected){
-      const r=6*scale;ctx.fillStyle='#fff';ctx.strokeStyle='#0f172a';ctx.lineWidth=1.5*scale;
-      [[a.x,a.y],[a.x+a.w,a.y],[a.x,a.y+a.h],[a.x+a.w,a.y+a.h]].forEach(([x,y])=>{
-        ctx.beginPath();ctx.rect(x-r,y-r,r*2,r*2);ctx.fill();ctx.stroke();
-      });
-    }
-    ctx.restore();
-  });
-  if(pointerAction?.type==='draw' && startPoint && lastPoint){
-    const r=normalize(startPoint,lastPoint),c=colorFor(pointerAction.tag);
-    ctx.save();ctx.strokeStyle=c;ctx.lineWidth=2*scale;ctx.setLineDash([8*scale,5*scale]);ctx.strokeRect(r.x,r.y,r.w,r.h);ctx.restore();
+ if(!state.image)return;
+ $("overlay").innerHTML=state.boxes.map(b=>rectMarkup(b)).join("")+(state.drawing?`<rect x="${state.drawing.x}" y="${state.drawing.y}" width="${state.drawing.w}" height="${state.drawing.h}" fill="#2563eb22" stroke="#2563eb" stroke-dasharray="6 4" stroke-width="2" vector-effect="non-scaling-stroke"/>`:"");
+ $("overlay").style.cursor=state.tool==="draw"?"crosshair":"default";
+ renderLayers();renderEditor();updateControls();
+}
+function renderLayers(){
+ $("layerCount").textContent=`(${state.boxes.length})`;
+ if(!state.boxes.length){$("layers").innerHTML='<div class="subtle">Todavía no hay contenedores.</div>';return}
+ $("layers").innerHTML=[...state.boxes].reverse().map((b)=>`<div class="layer ${state.selected===b.id?"selected":""}" data-layer="${b.id}"><span class="swatch" style="background:${b.color}"></span><span class="layer-name">${esc(b.name||"Contenedor sin nombre")}</span><span class="layer-meta">${Math.round(b.w)}×${Math.round(b.h)}</span><button class="mini" title="Seleccionar">↗</button></div>`).join("");
+ $("layers").querySelectorAll("[data-layer]").forEach(el=>el.addEventListener("click",()=>select(el.dataset.layer)));
+}
+function renderEditor(){
+ const b=state.boxes.find(x=>x.id===state.selected);
+ $("noSelection").classList.toggle("hidden",!!b);$("editor").classList.toggle("hidden",!b);
+ if(!b)return;
+ const map={boxName:"name",direction:"direction",wrap:"wrap",justify:"justify",align:"align",gap:"gap",color:"color",justification:"justification"};
+ Object.entries(map).forEach(([id,key])=>{if($(id).value!==String(b[key]??defaults[id]))$(id).value=b[key]??defaults[id]});
+}
+function select(id){
+ state.selected=id;state.tool="select";state.pinned=id;
+ render();
+ const b=state.boxes.find(x=>x.id===id);
+ if(b)showPropertyPreview(b,{x:b.x,y:b.y},true);
+ setStatus("Contenedor seleccionado. Puedes consultar sus propiedades en la tarjeta o modificarlas en el panel lateral.");
+}
+$("overlay").addEventListener("pointerdown",e=>{
+ if(!state.image)return;
+ const p=point(e),target=e.target.closest("[data-id]"),id=target?.dataset.id;
+ if(state.tool==="draw"){
+  // En modo dibujo ignoramos los rectángulos existentes: así se pueden anidar.
+  state.pinned=null;showPropertyPreview(null);
+  state.drawing={x:p.x,y:p.y,w:0,h:0,startX:p.x,startY:p.y};
+  $("overlay").setPointerCapture(e.pointerId);render();return;
+ }
+ if(id){
+  select(id);
+  const b=state.boxes.find(x=>x.id===id);
+  const nearHandle=Math.abs(p.x-(b.x+b.w))<16*scaled().sx&&Math.abs(p.y-(b.y+b.h))<16*scaled().sy;
+  state.drag={id,mode:nearHandle?"resize":"pending",start:p,orig:{...b},moved:false};
+  $("overlay").setPointerCapture(e.pointerId);
+ } else {
+  state.selected=null;state.pinned=null;showPropertyPreview(null);render();
+ }
+});
+$("overlay").addEventListener("pointermove",e=>{
+ if(!state.image)return;
+ const p=point(e);$("coordsText").textContent=`X: ${Math.round(p.x)} · Y: ${Math.round(p.y)}`;
+ if(state.drawing){
+  const d=state.drawing;d.w=p.x-d.startX;d.h=p.y-d.startY;render();return;
+ }
+ if(state.drag){
+  const d=state.drag,b=state.boxes.find(x=>x.id===d.id),dx=p.x-d.start.x,dy=p.y-d.start.y;
+  if(d.mode==="pending"&&Math.hypot(dx,dy)>3)d.mode="move";
+  if(d.mode==="move"||d.mode==="resize"){
+   d.moved=true;
+   if(d.mode==="move"){b.x=Math.max(0,Math.min(state.naturalW-b.w,d.orig.x+dx));b.y=Math.max(0,Math.min(state.naturalH-b.h,d.orig.y+dy))}
+   else{b.w=Math.max(20,Math.min(state.naturalW-b.x,d.orig.w+dx));b.h=Math.max(20,Math.min(state.naturalH-b.y,d.orig.h+dy))}
+   render();
   }
-}
-function renderTree(){
-  const host=$('tree');host.innerHTML='';
-  const roots=buildTree();
-  if(!roots.length){host.innerHTML='<div class="tree-empty">Todavía no hay elementos dibujados.</div>';return}
-  function addNode(node,depth){
-    const row=document.createElement('div');row.className='tree-node';
-    const b=document.createElement('button');b.type='button';b.className='tree-button'+(node.id===selectedId?' selected':'');
-    b.style.paddingLeft=(6+depth*15)+'px';
-    const dot=document.createElement('span');dot.className='tree-dot';dot.style.background=colorFor(node.tag);
-    b.append(dot,document.createTextNode(node.className?`${node.tag}.${node.className}`:node.tag));
-    b.addEventListener('click',()=>{selectedId=node.id;mode='select';updateModeButtons();render();renderTree();updateButtons()});
-    row.appendChild(b);host.appendChild(row);
-    node.children.forEach(ch=>addNode(ch,depth+1));
+  return;
+ }
+ if(state.tool==="select"){
+  const b=boxAt(p);
+  state.hovered=b?.id||null;
+  if(state.pinned){
+   const pinnedBox=state.boxes.find(x=>x.id===state.pinned);
+   showPropertyPreview(pinnedBox,pinnedBox?{x:pinnedBox.x,y:pinnedBox.y}:p,true);
+  } else {
+   showPropertyPreview(b,p,false);
   }
-  roots.forEach(n=>addNode(n,0));
+ } else {
+  state.hovered=null;
+  if(!state.pinned)showPropertyPreview(null);
+ }
+});
+function finishDraw(){
+ if(!state.drawing)return;
+ const d=state.drawing;
+ const b={id:uid(),x:Math.min(d.startX,d.startX+d.w),y:Math.min(d.startY,d.startY+d.h),w:Math.abs(d.w),h:Math.abs(d.h),...defaults,name:`Contenedor ${state.boxes.length+1}`};
+ state.drawing=null;
+ if(b.w>12&&b.h>12){
+  state.boxes.push(b);state.selected=b.id;
+  // Se conserva el modo dibujo para poder crear hijos sin tener que volver a activarlo.
+  state.tool="draw";state.pinned=null;
+  setStatus("Contenedor creado. Puedes dibujar otro dentro o cambiar a «Seleccionar» para editarlo.");
+ }else setStatus("El área seleccionada era demasiado pequeña.");
+ render();
 }
-function updateButtons(){
-  $('undoBtn').disabled=!annotations.length;
-  $('deleteBtn').disabled=!currentSelection();
-  $('clearBtn').disabled=!annotations.length;
-  $('downloadPngBtn').disabled=!imageLoaded;
-  $('exportHtmlBtn').disabled=!annotations.length;
-  $('status').textContent=imageLoaded?
-    `${annotations.length} ${annotations.length===1?'elemento':'elementos'} · ${canvas.width} × ${canvas.height} px`:
-    'Carga una imagen para comenzar.';
-}
-function updateHelp(){
-  const tag=containerSelect.value;
-  $('helpTitle').textContent=tag;
-  $('helpDescription').textContent=descriptions[tag]||'Contenedor HTML para agrupar contenido. Consulta su función y utiliza el elemento únicamente cuando su significado encaje con la información que contiene.';
-  $('elementHelp').style.borderLeftColor=colorFor(tag);
-}
-function updateModeButtons(){
-  $('drawMode').classList.toggle('active',mode==='draw');
-  $('selectMode').classList.toggle('active',mode==='select');
-  canvas.style.cursor=mode==='draw'?'crosshair':'default';
-}
-function hitTest(p){
-  // Último dibujado se considera el más cercano visualmente.
-  for(let i=annotations.length-1;i>=0;i--){
-    const a=annotations[i];
-    if(p.x>=a.x&&p.x<=a.x+a.w&&p.y>=a.y&&p.y<=a.y+a.h)return a;
+$("overlay").addEventListener("pointerup",()=>{
+ if(state.drawing)finishDraw();
+ if(state.drag){
+  const d=state.drag;
+  if(d.mode==="pending"&&!d.moved){
+   state.pinned=d.id;
+   const b=state.boxes.find(x=>x.id===d.id);
+   showPropertyPreview(b,{x:b.x,y:b.y},true);
   }
-  return null;
-}
-function handleAt(p,a){
-  if(!a)return null;
-  const t=11*Math.max(1,canvas.width/1200);
-  const handles=[
-    ['nw',a.x,a.y],['ne',a.x+a.w,a.y],['sw',a.x,a.y+a.h],['se',a.x+a.w,a.y+a.h]
-  ];
-  for(const [name,x,y] of handles)if(Math.abs(p.x-x)<=t&&Math.abs(p.y-y)<=t)return name;
-  return null;
-}
-function setMode(next){mode=next;updateModeButtons();pointerAction=null;render()}
-$('drawMode').addEventListener('click',()=>setMode('draw'));
-$('selectMode').addEventListener('click',()=>setMode('select'));
-
-containerSelect.addEventListener('change',()=>{
-  classInput.value=''; // La clase no se arrastra al siguiente contenedor.
-  contentSelect.selectedIndex=0;
-  updateHelp();
+  state.drag=null;
+ }
 });
-contentSelect.addEventListener('change',()=>{
-  // Al elegir contenido, el campo clase deja de aplicarse.
-  classInput.value='';
-});
-
-imageInput.addEventListener('change',e=>{
-  const file=e.target.files?.[0];if(!file)return;
-  if(!file.type.startsWith('image/')){alert('Selecciona un archivo de imagen válido.');return}
-  const reader=new FileReader();
-  reader.onload=()=>{
-    image.onload=()=>{
-      canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;
-      imageLoaded=true;annotations=[];selectedId=null;nextId=1;
-      canvas.hidden=false;$('emptyMessage').hidden=true;
-      $('imageInfo').textContent=`${file.name} · ${canvas.width} × ${canvas.height} px`;
-      render();renderTree();updateButtons();
-    };
-    image.onerror=()=>alert('No se ha podido cargar la imagen.');
-    image.src=reader.result;
-  };
-  reader.readAsDataURL(file);
-});
-
-canvas.addEventListener('pointerdown',e=>{
-  if(!imageLoaded)return;e.preventDefault();canvas.setPointerCapture(e.pointerId);
-  const p=pointFromEvent(e);
-  if(mode==='draw'){
-    const isContent=contentSelect.value!=='' && document.activeElement===contentSelect;
-    // Se utiliza el selector de contenido cuando se ha cambiado expresamente; por defecto, contenedor.
-    const tag=contentSelect.dataset.active==='true'?contentSelect.value:containerSelect.value;
-    const useContent=contentSelect.dataset.active==='true';
-    pointerAction={type:'draw',tag:useContent?tag:containerSelect.value,className:useContent?'':classInput.value.trim()};
-    startPoint=p;lastPoint=p;selectedId=null;
-  }else{
-    const selected=currentSelection();
-    const handle=selected?handleAt(p,selected):null;
-    if(handle){
-      pointerAction={type:'resize',id:selected.id,handle,original:{...selected},origin:p};
-    }else{
-      const hit=hitTest(p);
-      if(hit){
-        selectedId=hit.id;
-        pointerAction={type:'move',id:hit.id,origin:p,original:{...hit}};
-      }else{
-        selectedId=null;pointerAction=null;
-      }
-    }
+$("overlay").addEventListener("pointercancel",()=>{state.drawing=null;state.drag=null;render()});
+fields.forEach(id=>$(id).addEventListener("input",()=>{const b=state.boxes.find(x=>x.id===state.selected);if(!b)return;const key=id==="boxName"?"name":({justify:"justify",align:"align",justification:"justification"}[id]||id);b[key]=$(id).value;renderLayers();if(state.pinned===b.id)showPropertyPreview(b,{x:b.x,y:b.y},true);}));
+function deleteSelected(){if(!state.selected)return;state.boxes=state.boxes.filter(b=>b.id!==state.selected);state.selected=null;state.pinned=null;showPropertyPreview(null);render();setStatus("Contenedor eliminado.")}
+$("deleteBtn").onclick=deleteSelected;$("deleteSelectedBtn").onclick=deleteSelected;
+$("drawBtn").onclick=()=>setTool("draw");$("selectBtn").onclick=()=>setTool("select");
+$("duplicateBtn").onclick=()=>{const b=state.boxes.find(x=>x.id===state.selected);if(!b)return;const c={...b,id:uid(),name:b.name+" (copia)",x:Math.min(state.naturalW-b.w,b.x+18),y:Math.min(state.naturalH-b.h,b.y+18)};state.boxes.push(c);state.selected=c.id;render()};
+function setZoom(z){state.zoom=Math.max(.15,Math.min(2.5,z));$("sourceImage").style.width=state.naturalW*state.zoom+"px";$("sourceImage").style.height=state.naturalH*state.zoom+"px";$("overlay").style.width=state.naturalW*state.zoom+"px";$("overlay").style.height=state.naturalH*state.zoom+"px";$("zoomLabel").textContent=Math.round(state.zoom*100)+"%"}
+$("zoomIn").onclick=()=>setZoom(state.zoom*1.15);$("zoomOut").onclick=()=>setZoom(state.zoom/1.15);
+$("fitBtn").onclick=()=>{const available=$("stageWrap").clientWidth-60;setZoom(Math.min(1,available/state.naturalW))};
+function download(name,blob){const a=document.createElement("a"),url=URL.createObjectURL(blob);a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500)}
+function projectData(){return {app:"Flexbox Analyzer",version:1,image:state.image,imageName:state.imageName,naturalW:state.naturalW,naturalH:state.naturalH,boxes:state.boxes,activityTitle:$("activityTitle").value,studentName:state.studentName,instructions:$("activityInstructions").value}}
+$("exportJsonBtn").onclick=()=>download("flexbox-analyzer-proyecto.json",new Blob([JSON.stringify(projectData(),null,2)],{type:"application/json"}));
+$("importJsonBtn").onclick=()=>$("jsonInput").click();
+$("jsonInput").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.image||!Array.isArray(d.boxes))throw Error();if(!state.studentName&&d.studentName)setStudentName(d.studentName);if(!state.studentName){requestImageLoad(d.image,d.imageName||"proyecto-importado")}else{imageLoaded(d.image,d.imageName||"proyecto-importado")}setTimeout(()=>{state.boxes=d.boxes;$("activityTitle").value=d.activityTitle||"";$("activityInstructions").value=d.instructions||"";render();setStatus("Proyecto importado correctamente.")},180)}catch{alert("El archivo no parece ser un proyecto válido de Flexbox Analyzer.")}};r.readAsText(f);e.target.value=""};
+$("saveBtn").onclick=()=>{try{localStorage.setItem("flexboxAnalyzerProject",JSON.stringify(projectData()));setStatus("Trabajo guardado en este navegador.")}catch{alert("No se ha podido guardar. Exporta el proyecto JSON para conservarlo.")}};
+function drawExport(){
+ if(!state.image)return;const c=document.createElement("canvas");c.width=state.naturalW;c.height=state.naturalH;const ctx=c.getContext("2d"),im=new Image();
+ im.onload=()=>{ctx.drawImage(im,0,0);ctx.save();ctx.font="bold 18px Arial";ctx.fillStyle="#111827";ctx.fillRect(0,0,c.width,44);ctx.fillStyle="#fff";ctx.fillText($("activityTitle").value||"Análisis Flexbox",16,28);ctx.restore();
+ state.boxes.forEach((b,i)=>{ctx.save();ctx.strokeStyle=b.color;ctx.lineWidth=Math.max(2,c.width/700);ctx.fillStyle=b.color+"22";ctx.fillRect(b.x,b.y,b.w,b.h);ctx.strokeRect(b.x,b.y,b.w,b.h);const title=`${i+1}. ${b.name||"Contenedor"}`;ctx.font="bold 14px Arial";const tw=ctx.measureText(title).width;ctx.fillStyle=b.color;ctx.fillRect(b.x,b.y,Math.min(b.w,tw+14),23);ctx.fillStyle="#fff";ctx.fillText(title,b.x+7,b.y+16);
+ const lines=[`flex-direction: ${b.direction}`,`flex-wrap: ${b.wrap}`,`justify-content: ${b.justify}`,`align-items: ${b.align}`,`gap: ${b.gap}`];if(b.justification)lines.push(`Razón: ${b.justification}`);ctx.font="12px Arial";const lineH=16,pad=7,w=Math.min(b.w,Math.max(...lines.map(x=>ctx.measureText(x).width))+pad*2);let y=b.y+25;if(y+lines.length*lineH+pad>c.height)y=Math.max(0,b.y-lines.length*lineH-pad);ctx.fillStyle="#ffffffed";ctx.fillRect(b.x,y,w,lines.length*lineH+pad);ctx.fillStyle="#182230";lines.forEach((line,j)=>ctx.fillText(line,b.x+pad,y+14+j*lineH));ctx.restore()});
+ if(state.studentName){
+  // Marca de agua diagonal repetida para dificultar que se reutilice la captura como propia.
+  ctx.save();
+  ctx.translate(c.width/2,c.height/2);
+  ctx.rotate(-Math.PI/6);
+  ctx.font=`bold ${Math.max(22,Math.min(42,c.width/22))}px Arial`;
+  ctx.fillStyle="rgba(17,24,39,0.16)";
+  ctx.textAlign="center";
+  const watermark=state.studentName;
+  const stepX=Math.max(340,ctx.measureText(watermark).width+150);
+  const stepY=Math.max(180,c.height/5);
+  for(let y=-c.height*1.5;y<=c.height*1.5;y+=stepY){
+   for(let x=-c.width*1.5;x<=c.width*1.5;x+=stepX){
+    ctx.fillText(watermark,x,y);
+   }
   }
-  render();renderTree();updateButtons();
-});
-canvas.addEventListener('pointermove',e=>{
-  if(!pointerAction)return;
-  const p=pointFromEvent(e);
-  if(pointerAction.type==='draw'){lastPoint=p;render();return}
-  const a=annotations.find(x=>x.id===pointerAction.id);if(!a)return;
-  const dx=p.x-pointerAction.origin.x,dy=p.y-pointerAction.origin.y;
-  if(pointerAction.type==='move'){
-    a.x=Math.max(0,Math.min(canvas.width-a.w,pointerAction.original.x+dx));
-    a.y=Math.max(0,Math.min(canvas.height-a.h,pointerAction.original.y+dy));
-  }else{
-    const o=pointerAction.original,h=pointerAction.handle;
-    let left=o.x,top=o.y,right=o.x+o.w,bottom=o.y+o.h;
-    if(h.includes('w'))left=Math.min(right-5,o.x+dx);
-    if(h.includes('e'))right=Math.max(left+5,o.x+o.w+dx);
-    if(h.includes('n'))top=Math.min(bottom-5,o.y+dy);
-    if(h.includes('s'))bottom=Math.max(top+5,o.y+o.h+dy);
-    a.x=Math.max(0,left);a.y=Math.max(0,top);
-    a.w=Math.min(canvas.width-a.x,right-a.x);a.h=Math.min(canvas.height-a.y,bottom-a.y);
+  ctx.restore();
+  // Identificación visible en la parte inferior de la imagen exportada.
+  ctx.save();
+  ctx.font="bold 14px Arial";
+  const footer="Trabajo realizado por: "+state.studentName;
+  const footerW=ctx.measureText(footer).width+24;
+  ctx.fillStyle="rgba(17,24,39,0.88)";
+  ctx.fillRect(0,c.height-38,Math.min(c.width,footerW),38);
+  ctx.fillStyle="#fff";
+  ctx.fillText(footer,12,c.height-14);
+  ctx.restore();
+ }
+ c.toBlob(blob=>download("analisis-flexbox.png",blob),"image/png");
+ };im.src=state.image;
+}
+$("exportBtn").onclick=drawExport;
+$("activityTitle").oninput=()=>state.activityTitle=$("activityTitle").value;
+
+$("activityInstructions").oninput=()=>state.instructions=$("activityInstructions").value;
+// Restore a previously saved local project when available.
+try{
+ const lockedName=localStorage.getItem("flexboxAnalyzerStudentName");
+ if(lockedName)setStudentName(lockedName);
+ const saved=localStorage.getItem("flexboxAnalyzerProject");
+ if(saved){
+  const d=JSON.parse(saved);
+  if(d.image){
+   if(!state.studentName&&d.studentName)setStudentName(d.studentName);
+   if(state.studentName)imageLoaded(d.image,d.imageName||"trabajo-guardado");
+   else requestImageLoad(d.image,d.imageName||"trabajo-guardado");
+   setTimeout(()=>{
+    state.boxes=d.boxes||[];
+    $("activityTitle").value=d.activityTitle||state.activityTitle;
+    $("activityInstructions").value=d.instructions||"";
+    render();setStatus("Se ha recuperado el último trabajo guardado.");
+   },180);
   }
-  render();
-});
-function endPointer(e){
-  if(!pointerAction)return;
-  if(pointerAction.type==='draw'){
-    const r=normalize(startPoint,lastPoint||startPoint);
-    if(r.w>=5&&r.h>=5){
-      annotations.push({id:nextId++,...r,tag:pointerAction.tag,className:pointerAction.className});
-      selectedId=annotations[annotations.length-1].id;
-    }
-  }
-  pointerAction=null;startPoint=null;lastPoint=null;
-  render();renderTree();updateButtons();
-}
-canvas.addEventListener('pointerup',endPointer);
-canvas.addEventListener('pointercancel',endPointer);
-
-$('undoBtn').addEventListener('click',()=>{
-  const removed=annotations.pop();if(removed?.id===selectedId)selectedId=null;
-  render();renderTree();updateButtons();
-});
-$('deleteBtn').addEventListener('click',()=>{
-  if(selectedId===null)return;
-  annotations=annotations.filter(a=>a.id!==selectedId);selectedId=null;
-  render();renderTree();updateButtons();
-});
-$('clearBtn').addEventListener('click',()=>{
-  if(!annotations.length||!confirm('¿Eliminar todos los recuadros?'))return;
-  annotations=[];selectedId=null;render();renderTree();updateButtons();
-});
-
-function escapeAttr(v){return v.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-function toHtml(node,depth=0){
-  const indent='    '.repeat(depth),cls=node.className?` class="${escapeAttr(node.className)}"`:'';
-  if(voidTags.has(node.tag))return `${indent}<${node.tag}${cls}>`;
-  const children=node.children.map(n=>toHtml(n,depth+1)).join('\n');
-  return children?`${indent}<${node.tag}${cls}>\n${children}\n${indent}</${node.tag}>`:
-    `${indent}<${node.tag}${cls}>\n${indent}</${node.tag}>`;
-}
-function generateHtml(){
-  const roots=buildTree();
-  return roots.map(n=>toHtml(n)).join('\n\n');
-}
-$('exportHtmlBtn').addEventListener('click',()=>{
-  const fragment=generateHtml();
-  $('htmlOutput').textContent=fragment;
-  $('htmlPanel').hidden=false;
-  const doc=`<!DOCTYPE html>\n<html lang="es">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>Estructura HTML</title>\n</head>\n<body>\n${fragment.split('\n').map(line=>'    '+line).join('\n')}\n</body>\n</html>`;
-  downloadBlob(new Blob([doc],{type:'text/html;charset=utf-8'}),'estructura-semantica.html');
-});
-function downloadBlob(blob,name){
-  const url=URL.createObjectURL(blob),a=document.createElement('a');
-  a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
-  setTimeout(()=>URL.revokeObjectURL(url),1000);
-}
-$('downloadPngBtn').addEventListener('click',()=>{
-  if(!imageLoaded)return;render();
-  canvas.toBlob(blob=>{if(blob)downloadBlob(blob,'wireframe-semantico.png');else alert('No se ha podido generar el PNG.')},'image/png');
-});
-$('copyHtmlBtn').addEventListener('click',async()=>{
-  try{await navigator.clipboard.writeText($('htmlOutput').textContent);$('copyHtmlBtn').textContent='¡Copiado!';setTimeout(()=>$('copyHtmlBtn').textContent='Copiar código',1300)}
-  catch{alert('No se ha podido copiar automáticamente. Selecciona el código y cópialo manualmente.')}
-});
-$('closeHtmlBtn').addEventListener('click',()=>$('htmlPanel').hidden=true);
-
-// Recordar qué selector se ha usado más recientemente para dibujar.
-contentSelect.addEventListener('focus',()=>contentSelect.dataset.active='true');
-containerSelect.addEventListener('focus',()=>contentSelect.dataset.active='false');
-containerSelect.addEventListener('pointerdown',()=>contentSelect.dataset.active='false');
-contentSelect.addEventListener('pointerdown',()=>contentSelect.dataset.active='true');
-
-updateHelp();updateModeButtons();updateButtons();
+ }
+}catch{}
+updateControls();
+})();
 </script>
 </body>
 </html>
